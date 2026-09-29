@@ -1,0 +1,16 @@
+{
+  "golden_ak": {
+    "name": "Golden AK-47",
+    "damage": 45,
+    "magazine": 40,
+    "reserve": 320,
+    "fire_rate": 0.12,
+    "auto": true,
+    "spread": 0.8,
+    "range": 90.0,
+    "color": [0.95, 0.75, 0.15],
+    "length": 1.0,
+    "sound": "rifle",
+    "starter": true
+  }
+}

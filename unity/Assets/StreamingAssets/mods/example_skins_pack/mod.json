@@ -1,0 +1,9 @@
+{
+  "id": "skins_pack",
+  "name": "Skins Pack (weapons + zombies)",
+  "version": "1.0.0",
+  "author": "DeadZone Team (example)",
+  "description": "Weapon skins + zombie skins. Use: --weapon-skin rifle:gold --zombie-skin common:neon",
+  "priority": 10,
+  "enabled_by_default": true
+}

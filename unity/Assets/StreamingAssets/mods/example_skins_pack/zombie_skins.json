@@ -1,0 +1,15 @@
+{
+  "neon": {
+    "zombie": "common",
+    "name": "Neon",
+    "color": [0.1, 1.0, 0.9],
+    "model": "assets/neon_zombie.glb",
+    "default_for": null
+  },
+  "gold_tank": {
+    "zombie": "tank",
+    "name": "Gold Tank",
+    "color": [0.95, 0.75, 0.15],
+    "model": null
+  }
+}

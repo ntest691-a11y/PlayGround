@@ -1,0 +1,9 @@
+{
+  "id": "golden_ak",
+  "name": "Golden AK-47",
+  "version": "1.0.0",
+  "author": "DeadZone Team (example)",
+  "description": "Adds a powerful golden rifle. Like an L4D2 weapon skin+stats mod. Starter weapon.",
+  "priority": 10,
+  "enabled_by_default": true
+}

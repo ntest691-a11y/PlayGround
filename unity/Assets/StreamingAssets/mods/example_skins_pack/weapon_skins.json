@@ -1,0 +1,15 @@
+{
+  "gold": {
+    "weapon": "rifle",
+    "name": "Gold",
+    "color": [0.95, 0.75, 0.15],
+    "model": "assets/gold_rifle.glb",
+    "texture": null
+  },
+  "neon_blue": {
+    "weapon": "smg",
+    "name": "Neon Blue",
+    "color": [0.1, 0.8, 1.0],
+    "model": null
+  }
+}

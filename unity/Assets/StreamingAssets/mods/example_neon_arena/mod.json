@@ -1,0 +1,9 @@
+{
+  "id": "neon_arena",
+  "name": "Neon Arena (custom map)",
+  "version": "1.0.0",
+  "author": "DeadZone Team (example)",
+  "description": "Custom map mod like L4D2 custom campaigns. Pick with --map neon_arena.",
+  "priority": 5,
+  "enabled_by_default": true
+}
