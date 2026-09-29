@@ -2,6 +2,17 @@
 import random
 
 
+def _c(c, default=(0.5, 0.5, 0.5)):
+    try:
+        from ursina import Color
+        c = list(c if c is not None else default)
+        while len(c) < 4:
+            c.append(1.0)
+        return Color(float(c[0]), float(c[1]), float(c[2]), float(c[3]))
+    except Exception:
+        return tuple(c) if c else default
+
+
 class Zombie:
     def __init__(self, Entity, text, zid, zdef, pos, target, on_die, modloader=None,
                  model_path=None, texture_path=None):
@@ -20,7 +31,7 @@ class Zombie:
         self.score = int(zdef.get("score", 100))
         self.ranged = bool(zdef.get("ranged", False))
         self._cd = 0.0
-        color = tuple(zdef.get("color", [0.3, 0.6, 0.3]))
+        color = _c(zdef.get("color", [0.3, 0.6, 0.3]))
         scale = float(zdef.get("scale", 1.0))
         # Custom modded model (VRM/GLB/OBJ/...) — falls back to cube
         if model_path:

@@ -1,6 +1,18 @@
 """Builds a 3D level from a map dict (vanilla or modded). Requires ursina at runtime."""
 
 
+def _c(c, default=(0.5, 0.5, 0.5)):
+    """JSON [r,g,b] (0-1 floats) -> ursina Color (needs 4 components)."""
+    try:
+        from ursina import Color
+        c = list(c if c is not None else default)
+        while len(c) < 4:
+            c.append(1.0)
+        return Color(float(c[0]), float(c[1]), float(c[2]), float(c[3]))
+    except Exception:
+        return tuple(c) if c else default
+
+
 def build_level(map_def, Entity=None, ursina_mods=None):
     """Create ground/props/walls. Returns dict with spawn info.
 
@@ -22,14 +34,14 @@ def build_level(map_def, Entity=None, ursina_mods=None):
     ground_color = tuple(map_def.get("ground_color", [0.18, 0.19, 0.22]))
 
     ground = Entity(model="plane", scale=(ground_size, 1, ground_size),
-                    color=ground_color, collider="box")
+                    color=_c(ground_color), collider="box")
 
     created = [ground]
     for p in map_def.get("props", []):
         ptype = p.get("type", "box")
         pos = tuple(p.get("pos", [0, 1, 0]))
         scale = tuple(p.get("scale", [2, 2, 2]))
-        color = tuple(p.get("color", [0.4, 0.4, 0.4]))
+        color = _c(p.get("color", [0.4, 0.4, 0.4]))
         if ptype in ("box", "wall", "pillar"):
             e = Entity(model="cube", position=pos, scale=scale, color=color,
                        collider="box")
