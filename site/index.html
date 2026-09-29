@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DEADZONE: Survivors — لعبة زومبي 3D تدعم المودات</title>
+<style>
+  :root{--bg:#0b0e14;--panel:#141a26;--accent:#7CFC00;--accent2:#ff4655;--text:#e8ecf3;--muted:#9aa4b5}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Segoe UI",Tahoma,Arial,sans-serif;background:var(--bg);color:var(--text)}
+  header.hero{padding:56px 24px 40px;text-align:center;background:radial-gradient(800px 320px at 50% -60px,#1d2b16 0%,transparent 70%),linear-gradient(180deg,#101623,#0b0e14)}
+  .badge{display:inline-block;background:#1c2536;border:1px solid #2c3a52;color:var(--accent);border-radius:999px;padding:6px 16px;font-size:14px;margin-bottom:16px}
+  h1{margin:0 0 8px;font-size:clamp(30px,5vw,54px)}
+  h1 .red{color:var(--accent2)}
+  p.tag{color:var(--muted);font-size:clamp(15px,2.4vw,19px);max-width:760px;margin:0 auto}
+  .cta{margin-top:22px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+  .cta code,.cta span.btn{background:#1c2536;border:1px solid #33445f;border-radius:10px;padding:10px 18px;font-size:15px;color:var(--text)}
+  .cta span.btn{background:var(--accent);color:#0b0e14;font-weight:700;border:none}
+  main{max-width:1080px;margin:0 auto;padding:28px 20px 60px}
+  section.panel{background:var(--panel);border:1px solid #243046;border-radius:16px;padding:22px;margin:18px 0}
+  h2{margin:0 0 12px;font-size:22px}
+  h2 small{color:var(--muted);font-weight:400;font-size:14px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+  .card{background:#0f1522;border:1px solid #273349;border-radius:12px;padding:16px}
+  .card h3{margin:0 0 6px;font-size:17px}
+  .card p{margin:0;color:var(--muted);font-size:14px;line-height:1.7}
+  .pill{display:inline-block;font-size:12px;border-radius:999px;padding:2px 10px;margin-bottom:8px;background:#22304a;color:#bcd0f5}
+  .pill.green{background:#17301a;color:var(--accent)}
+  .pill.red{background:#3a1620;color:#ff8b96}
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th,td{text-align:right;padding:9px 10px;border-bottom:1px solid #243046}
+  th{color:var(--muted);font-weight:600}
+  code.cmd{display:block;background:#080b11;border:1px solid #2a3852;border-radius:10px;padding:10px 14px;margin:8px 0;font-size:14px;color:#c8f7a0;direction:ltr;text-align:left;overflow-x:auto}
+  footer{text-align:center;color:var(--muted);font-size:13px;padding:26px}
+  .kbd{background:#222d44;border-radius:6px;padding:1px 8px;font-size:13px;border:1px solid #34445f}
+  @media (max-width:600px){header.hero{padding:40px 16px 30px}section.panel{padding:16px}}
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="badge">🧟 DESKTOP 3D GAME + MODS — مثل L4D2</div>
+  <h1>DEADZONE: <span class="red">Survivors</span></h1>
+  <p class="tag">لعبة تصويب زومبي ثلاثية الأبعاد للكمبيوتر (Waves FPS) — خرائط وأسلحة وزومبي قابلة للتوسعة بنظام مودات كامل: مجلدات + ملفات <b>.dzm</b> مثل VPK في Left 4 Dead 2.</p>
+  <div class="cta">
+    <span class="btn">▶ يعمل على Desktop عبر Python + Ursina</span>
+    <code>pip install -r requirements.txt &amp;&amp; python main.py</code>
+  </div>
+</header>
+<main>
+  <section class="panel">
+    <h2>🎮 أسلوب اللعب <small>L4D2-like wave survival</small></h2>
+    <div class="grid">
+      <div class="card"><h3>🌊 موجات زومبي</h3><p>موجات متصاعدة: Common وRunner وBrute وSpitter — وبعدها وضع Endless بأعداد متزايدة.</p></div>
+      <div class="card"><h3>🔫 4 أسلحة أساسية</h3><p>Pistol وSMG وShotgun وRifle — ضرر ومخزن وسرعة إطلاق لكل سلاح، قابلة للتعديل بالمودات.</p></div>
+      <div class="card"><h3>🗺️ خريطتان أصليتان</h3><p>Rooftop Siege وAbandoned Warehouse — إحداثيات spawn ونقاط تغطية لكل خريطة.</p></div>
+    </div>
+  </section>
+  <section class="panel">
+    <h2>🧩 نظام المودات <small>mods/ — مثل VPK / Workshop</small></h2>
+    <table>
+      <tr><th>الملف</th><th>الوظيفة</th></tr>
+      <tr><td><code>mod.json</code></td><td>الاسم والإصدار والكاتب والأولوية priority</td></tr>
+      <tr><td><code>weapons.json</code></td><td>أسلحة جديدة أو تعديل أسلحة موجودة</td></tr>
+      <tr><td><code>zombies.json</code></td><td>أنواع زومبي جديدة (HP / سرعة / ضرر)</td></tr>
+      <tr><td><code>maps.json</code></td><td>خرائط جديدة كاملة (props + waves)</td></tr>
+      <tr><td><code>hooks.py</code></td><td>سكربت مثل VScript: on_wave_start وmodify_damage</td></tr>
+    </table>
+    <code class="cmd">python main.py --list-mods          # عرض المودات</code>
+    <code class="cmd">python main.py --map neon_arena      # خريطة من مود</code>
+    <code class="cmd">python tools/new_mod.py my_gun --pack  # مود جديد + ملف .dzm للمشاركة</code>
+  </section>
+  <section class="panel">
+    <h2>📦 مودات مثال مشحونة مع اللعبة</h2>
+    <div class="grid">
+      <div class="card"><span class="pill green">WEAPON</span><h3>Golden AK-47</h3><p>بندقية ذهبية قوية (starter) — مثال مود سلاح.</p></div>
+      <div class="card"><span class="pill red">ZOMBIE + SCRIPT</span><h3>Tank</h3><p>زومبي عملاق 1200HP + سكربت hooks يضيفه كل 3 موجات.</p></div>
+      <div class="card"><span class="pill">MAP</span><h3>Neon Arena</h3><p>خريطة نيون مخصصة — مثل Custom Campaigns في L4D2.</p></div>
+    </div>
+  </section>
+  <section class="panel">
+    <h2>⌨️ التحكم <small>Desktop</small></h2>
+    <p><span class="kbd">WASD</span> حركة &nbsp;<span class="kbd">Mouse</span> نظر &nbsp;<span class="kbd">LMB</span> إطلاق &nbsp;<span class="kbd">R</span> تعبئة &nbsp;<span class="kbd">1-4</span> أسلحة &nbsp;<span class="kbd">Q</span> تبديل &nbsp;<span class="kbd">M</span> المودات &nbsp;<span class="kbd">F1</span> مساعدة &nbsp;<span class="kbd">Esc</span> خروج</p>
+    <code class="cmd">cd game &amp;&amp; pip install -r requirements.txt &amp;&amp; python main.py</code>
+  </section>
+</main>
+<footer>DEADZONE: Survivors — مشروع مفتوح قابل للمودات · صُنع بـ Python + Ursina · مجلد اللعبة: game/</footer>
+</body>
+</html>

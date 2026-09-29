@@ -1,0 +1,9 @@
+{
+  "id": "tank_mod",
+  "name": "Tank + Double Damage Hooks",
+  "version": "1.1.0",
+  "author": "DeadZone Team (example)",
+  "description": "Adds Tank zombie and demonstrates hooks.py (L4D2 script-style mod).",
+  "priority": 20,
+  "enabled_by_default": true
+}
