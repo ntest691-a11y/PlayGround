@@ -13,9 +13,16 @@ Controls:
   ~ console (spawn / give / god) — type: help
 
 Mods (like L4D2 VPK/Workshop):
-  mods/<id>/mod.json + weapons.json/zombies.json/maps.json/hooks.py
+  mods/<id>/mod.json + weapons.json/zombies.json/maps.json/characters.json/
+                 player_skins.json/zombie_skins.json/weapon_skins.json/hooks.py
+                 + assets/*.glb/*.vrm/*.obj/*.png
   mods/<id>.dzm  (zip with same layout)
   See mods/example_* + README_MODDING_AR.md
+
+Characters & skins:
+  --character ID --player-skin ID --zombie-skin Z:ZSKIN --weapon-skin W:WSKIN
+  Supported models: .glb/.gltf/.obj/.egg/.bam native, .vrm auto (as glTF),
+                    .fbx must be converted to .glb first.
 """
 import argparse
 import sys
@@ -26,15 +33,32 @@ sys.path.insert(0, str(HERE))
 
 from core.modloader import ModLoader
 from core.gamedata import GameData
+from core.assets import resolve_asset
 
 
 def parse_args():
     p = argparse.ArgumentParser(description="DEADZONE: Survivors")
     p.add_argument("--map", default="rooftop")
     p.add_argument("--list-mods", action="store_true")
+    p.add_argument("--list-skins", action="store_true")
     p.add_argument("--enable-mod", action="append", default=[])
     p.add_argument("--disable-mod", action="append", default=[])
+    p.add_argument("--character", default=None, help="playable character id")
+    p.add_argument("--player-skin", default=None, help="player skin id")
+    p.add_argument("--zombie-skin", action="append", default=[],
+                   help="ZID:SKINID, e.g. common:neon (repeatable)")
+    p.add_argument("--weapon-skin", action="append", default=[],
+                   help="WID:SKINID, e.g. rifle:gold (repeatable)")
     return p.parse_args()
+
+
+def _parse_skin_args(items):
+    out = {}
+    for it in items:
+        if ":" in it:
+            k, v = it.split(":", 1)
+            out[k.strip()] = v.strip()
+    return out
 
 
 def main():
@@ -51,7 +75,7 @@ def main():
 
     data = GameData(loader)
 
-    if args.list_mods:
+    if args.list_mods or args.list_skins:
         print("=== Mods ===")
         for s in loader.summary():
             tag = "ON " if s["enabled"] else "OFF"
@@ -59,10 +83,19 @@ def main():
             if s["weapons"]: print(f"     weapons: {s['weapons']}")
             if s["zombies"]: print(f"     zombies: {s['zombies']}")
             if s["maps"]: print(f"     maps: {s['maps']}")
+            if s.get("characters"): print(f"     characters: {s['characters']}")
+            if s.get("player_skins"): print(f"     player_skins: {s['player_skins']}")
+            if s.get("zombie_skins"): print(f"     zombie_skins: {s['zombie_skins']}")
+            if s.get("weapon_skins"): print(f"     weapon_skins: {s['weapon_skins']}")
             if s["hooks"]: print(f"     hooks: {s['hooks']}")
         print(f"\nWeapons: {sorted(data.weapons)}")
         print(f"Zombies: {sorted(data.zombies)}")
         print(f"Maps: {sorted(data.maps)}")
+        print(f"Characters: {sorted(data.characters)}")
+        print(f"PlayerSkins: {sorted(data.player_skins)}")
+        print(f"ZombieSkins: {sorted(data.zombie_skins)}")
+        print(f"WeaponSkins: {sorted(data.weapon_skins)}")
+        print("\nModels: .glb/.gltf/.obj/.egg/.bam native | .vrm auto-as-glb | .fbx convert to .glb first")
         return
 
     if args.map not in data.maps:
@@ -85,6 +118,38 @@ def main():
     app.exit_button.visible = False
 
     state = PlayerState(data, loader)
+    # --- character + skins selection (all moddable) ---
+    zombie_skin_map = _parse_skin_args(args.zombie_skin)
+    weapon_skin_map = _parse_skin_args(args.weapon_skin)
+    active_character = args.character or None
+    if active_character and active_character not in data.characters:
+        print(f"Unknown character '{active_character}'. Available: {sorted(data.characters)}")
+        sys.exit(1)
+    if args.player_skin and args.player_skin not in data.player_skins:
+        print(f"Unknown player skin '{args.player_skin}'. Available: {sorted(data.player_skins)}")
+        sys.exit(1)
+    for zid, sk in zombie_skin_map.items():
+        if zid not in data.zombies: print(f"WARN unknown zombie '{zid}'"); 
+        if sk not in data.zombie_skins: print(f"WARN unknown zombie skin '{sk}'")
+    for wid, sk in weapon_skin_map.items():
+        if wid not in data.weapons: print(f"WARN unknown weapon '{wid}'")
+        if sk not in data.weapon_skins: print(f"WARN unknown weapon skin '{sk}'")
+    if active_character:
+        print(f"Character: {active_character} ({data.characters[active_character].get('name')})")
+    if args.player_skin:
+        print(f"Player skin: {args.player_skin}")
+
+    def _resolve_skin_model(kind: str, skin_id: str):
+        skin = {"p": data.player_skins, "z": data.zombie_skins, "w": data.weapon_skins}[kind].get(skin_id, {})
+        ref = skin.get("model")
+        if not ref:
+            return None, None
+        owner = data.skin_owner(kind, skin_id)
+        path = resolve_asset(loader, owner, ref) if owner else None
+        tex = skin.get("texture")
+        tex_path = resolve_asset(loader, owner, tex) if (owner and tex) else None
+        return path, tex_path
+
     map_def = data.maps[args.map]
     # mod hook can rewrite wave
     level = build_level(map_def)
@@ -134,8 +199,22 @@ def main():
 
     def refresh_gun():
         w = state.weapon
+        # weapon skin override (mods can change model/color per weapon)
+        skin_id = weapon_skin_map.get(state.weapon_id)
+        if skin_id and skin_id in data.weapon_skins:
+            w = data.apply_skin_to_weapon_def(dict(w), data.weapon_skins[skin_id])
         c = tuple(w.get("color", [0.2, 0.2, 0.25]))
         try:
+            model_ref = w.get("model")
+            if model_ref:
+                # find owner mod: weapon itself or skin
+                owner = None
+                for m in loader.enabled_mods():
+                    if state.weapon_id in m.weapons or (skin_id and skin_id in m.weapon_skins):
+                        owner = m.id; break
+                mpath = resolve_asset(loader, owner, model_ref) if owner else None
+                if mpath:
+                    gun.model = mpath
             gun.color = c
             ln = float(w.get("length", 0.8))
             gun.scale = (0.25, 0.25, ln)
@@ -145,8 +224,23 @@ def main():
     def spawn_one(zid):
         import random
         zdef = data.zombie(zid)
+        # zombie skin override: explicit --zombie-skin or skin's default_for
+        skin_id = zombie_skin_map.get(zid)
+        if not skin_id:
+            for sid, s in data.zombie_skins.items():
+                if s.get("zombie") == zid or s.get("default_for") == zid:
+                    skin_id = sid; break
+        model_path, tex_path = None, None
+        if skin_id and skin_id in data.zombie_skins:
+            zdef = data.apply_skin_to_zombie_def(dict(zdef), data.zombie_skins[skin_id])
+            model_path, tex_path = _resolve_skin_model("z", skin_id)
+        elif zdef.get("model"):
+            owner = next((m.id for m in loader.enabled_mods() if zid in m.zombies), None)
+            if owner:
+                model_path = resolve_asset(loader, owner, zdef["model"])
         sp = random.choice(spawn_points)
-        z = Zombie(Entity, Text, zid, zdef, tuple(sp), player, on_die=on_zombie_die, modloader=loader)
+        z = Zombie(Entity, Text, zid, zdef, tuple(sp), player, on_die=on_zombie_die,
+                   modloader=loader, model_path=model_path, texture_path=tex_path)
         zombies.append(z)
 
     def on_zombie_die(z):

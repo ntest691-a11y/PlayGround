@@ -1,0 +1,9 @@
+{
+  "id": "vrm_avatar",
+  "name": "VRM Avatar Survivor (example)",
+  "version": "1.0.0",
+  "author": "DeadZone Team (example)",
+  "description": "Playable character from a VRM/VRoid avatar. Drop your .vrm in assets/ and update characters.json model field. Use: --character vrm_hero",
+  "priority": 10,
+  "enabled_by_default": true
+}

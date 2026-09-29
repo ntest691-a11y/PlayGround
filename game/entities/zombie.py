@@ -3,7 +3,8 @@ import random
 
 
 class Zombie:
-    def __init__(self, Entity, text, zid, zdef, pos, target, on_die, modloader=None):
+    def __init__(self, Entity, text, zid, zdef, pos, target, on_die, modloader=None,
+                 model_path=None, texture_path=None):
         from ursina import Vec3
         self.zid = zid
         self.defn = zdef
@@ -21,9 +22,25 @@ class Zombie:
         self._cd = 0.0
         color = tuple(zdef.get("color", [0.3, 0.6, 0.3]))
         scale = float(zdef.get("scale", 1.0))
-        self.entity = Entity(model="cube", position=pos,
-                             scale=(0.9 * scale, 1.8 * scale, 0.9 * scale),
-                             color=color, collider="box")
+        # Custom modded model (VRM/GLB/OBJ/...) — falls back to cube
+        if model_path:
+            try:
+                kwargs = dict(model=model_path, position=pos,
+                              scale=(scale, scale, scale), collider="box")
+                if texture_path:
+                    kwargs["texture"] = texture_path
+                else:
+                    kwargs["color"] = color
+                self.entity = Entity(**kwargs)
+            except Exception as e:
+                print(f"[Zombie] custom model failed ({model_path}): {e}")
+                self.entity = Entity(model="cube", position=pos,
+                                     scale=(0.9 * scale, 1.8 * scale, 0.9 * scale),
+                                     color=color, collider="box")
+        else:
+            self.entity = Entity(model="cube", position=pos,
+                                 scale=(0.9 * scale, 1.8 * scale, 0.9 * scale),
+                                 color=color, collider="box")
         # head
         self.head = Entity(parent=self.entity, model="cube",
                            position=(0, 0.65, 0), scale=(0.6, 0.35, 0.6),

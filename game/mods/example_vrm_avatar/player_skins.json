@@ -1,0 +1,9 @@
+{
+  "hero_street": {
+    "character": "vrm_hero",
+    "name": "Street Outfit",
+    "color": [0.2, 0.9, 0.6],
+    "model": "assets/hero_street.glb",
+    "texture": null
+  }
+}

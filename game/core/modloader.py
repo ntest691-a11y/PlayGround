@@ -40,7 +40,14 @@ import sys
 
 
 MANIFEST = "mod.json"
-DATA_FILES = ("weapons.json", "zombies.json", "maps.json")
+# L4D2-style data files. Character/skin files let EVERY entity be moddable:
+#   characters.json    : playable survivors { "<id>": {name, model, texture, color, scale} }
+#   player_skins.json  : skins for survivors/players { "<id>": {character, name, model, texture, color} }
+#   zombie_skins.json  : skins per zombie type { "<zombie_id>:<skin_id>" or "<skin_id>": {zombie, name, model, ...} }
+#   weapon_skins.json  : weapon skins { "<weapon_id>:<skin_id>" or "<skin_id>": {weapon, name, model, texture, color} }
+DATA_FILES = ("weapons.json", "zombies.json", "maps.json",
+              "characters.json", "player_skins.json",
+              "zombie_skins.json", "weapon_skins.json")
 HOOKS_FILE = "hooks.py"
 PACKED_EXT = ".dzm"
 ENABLED_FILE = "enabled.json"
@@ -60,6 +67,10 @@ class Mod:
     weapons: Dict[str, Any] = field(default_factory=dict)
     zombies: Dict[str, Any] = field(default_factory=dict)
     maps: Dict[str, Any] = field(default_factory=dict)
+    characters: Dict[str, Any] = field(default_factory=dict)
+    player_skins: Dict[str, Any] = field(default_factory=dict)
+    zombie_skins: Dict[str, Any] = field(default_factory=dict)
+    weapon_skins: Dict[str, Any] = field(default_factory=dict)
     hooks: Dict[str, Callable] = field(default_factory=dict)
     manifest: Dict[str, Any] = field(default_factory=dict)
 
@@ -177,6 +188,10 @@ class ModLoader:
         mod.weapons = _load_json_from_folder(folder, "weapons.json")
         mod.zombies = _load_json_from_folder(folder, "zombies.json")
         mod.maps = _load_json_from_folder(folder, "maps.json")
+        mod.characters = _load_json_from_folder(folder, "characters.json")
+        mod.player_skins = _load_json_from_folder(folder, "player_skins.json")
+        mod.zombie_skins = _load_json_from_folder(folder, "zombie_skins.json")
+        mod.weapon_skins = _load_json_from_folder(folder, "weapon_skins.json")
         hf = folder / HOOKS_FILE
         if hf.is_file():
             try:
@@ -276,6 +291,18 @@ class ModLoader:
                 out[k] = v
         return out
 
+    def _merge_generic(self, attr: str, vanilla: Dict[str, Any]) -> Dict[str, Any]:
+        out = dict(vanilla)
+        for m in reversed(self.enabled_mods()):
+            for k, v in getattr(m, attr, {}).items():
+                out[k] = v
+        return out
+
+    def merged_characters(self, vanilla): return self._merge_generic("characters", vanilla)
+    def merged_player_skins(self, vanilla): return self._merge_generic("player_skins", vanilla)
+    def merged_zombie_skins(self, vanilla): return self._merge_generic("zombie_skins", vanilla)
+    def merged_weapon_skins(self, vanilla): return self._merge_generic("weapon_skins", vanilla)
+
     # ---------- hooks dispatch ----------
 
     def hook(self, name: str, *args):
@@ -320,5 +347,9 @@ class ModLoader:
             "weapons": list(m.weapons.keys()),
             "zombies": list(m.zombies.keys()),
             "maps": list(m.maps.keys()),
+            "characters": list(m.characters.keys()),
+            "player_skins": list(m.player_skins.keys()),
+            "zombie_skins": list(m.zombie_skins.keys()),
+            "weapon_skins": list(m.weapon_skins.keys()),
             "hooks": list(m.hooks.keys()),
         } for m in self.mods]

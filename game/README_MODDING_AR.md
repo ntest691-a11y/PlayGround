@@ -25,9 +25,24 @@ python main.py --list-mods     # عرض المودات المثبتة
 |---|---|
 | `mod.json` | الاسم/الإصدار/الكاتب/الأولوية `priority` |
 | `weapons.json` | أسلحة جديدة أو تعديل أسلحة `{id: {damage, magazine, ...}}` |
-| `zombies.json` | زومبي جدد `{id: {hp, speed, damage, ...}}` |
+| `zombies.json` | زومبي جدد `{id: {hp, speed, damage, ...}}` — **كلهم يقبلون `model` مخصص** |
 | `maps.json` | خرائط جديدة `{id: {props, spawn_points, waves}}` |
+| `characters.json` | **شخصيات لاعب جديدة** `{id: {name, model, color, scale}}` — كل الشخصيات قابلة للتعديل |
+| `player_skins.json` | سكنات للشخصيات `{id: {character, model, texture, color}}` |
+| `zombie_skins.json` | سكنات زومبي `{id: {zombie, model, texture, color}}` |
+| `weapon_skins.json` | **سكنات أسلحة** `{id: {weapon, model, texture, color}}` |
+| `assets/` | موديلات + تكستشرات: `.glb/.gltf/.obj` مباشرة، `.vrm` تلقائي، `.fbx` حوّله لـ `.glb` |
 | `hooks.py` | سكربت مثل VScript: `on_wave_start`, `on_zombie_spawn`, `modify_damage`, `on_player_damage` |
+
+## الشخصيات والسكنات (جديد)
+```bash
+python main.py --list-skins                        # عرض كل الشخصيات والسكنات
+python main.py --character vrm_hero                # العب بشخصية VRM
+python main.py --weapon-skin rifle:gold --zombie-skin common:neon
+```
+- **VRM:** انسخ ملف `.vrm` من VRoid Studio إلى `assets/` واربطه في `characters.json` — يشتغل بدون تحويل
+- **GLB/OBJ:** حط الملف في `assets/` واربطه بنفس الطريقة
+- **FBX:** حوّله بـ fbx2gltf أو Blender إلى `.glb` أولًا
 
 الأولوية: الرقم الأكبر يكسب عند التعارض. التفعيل/التعطيل يُحفظ في `mods/enabled.json`.
 
@@ -35,6 +50,8 @@ python main.py --list-mods     # عرض المودات المثبتة
 - `example_golden_ak` — سلاح Golden AK-47 (سلاح جديد starter)
 - `example_tank` — زومبي Tank + سكربت hooks (كل 3 موجات يضيف Tank + درع 10%)
 - `example_neon_arena` — خريطة `neon_arena` جديدة — جرّب: `python main.py --map neon_arena`
+- `example_skins_pack` — سكنات أسلحة (`rifle:gold`) + سكنات زومبي (`common:neon`)
+- `example_vrm_avatar` — شخصية VRM (`--character vrm_hero`) — بدّل ملف `assets/hero.vrm` بموديل VRoid حقيقي
 
 ## صناعة مود جديد
 ```bash

@@ -153,3 +153,24 @@ VANILLA_MAPS = {
 }
 
 STARTING_LOADOUT = ["pistol", "smg"]
+
+# Playable survivors — every field moddable via characters.json / player_skins.json
+VANILLA_CHARACTERS = {
+    "survivor_1": {"name": "Rookie", "color": [0.2, 0.4, 0.8], "scale": 1.0, "model": None, "texture": None},
+    "survivor_2": {"name": "Doc", "color": [0.8, 0.4, 0.2], "scale": 1.0, "model": None, "texture": None},
+    "survivor_3": {"name": "Ghost", "color": [0.4, 0.8, 0.4], "scale": 1.0, "model": None, "texture": None},
+    "survivor_4": {"name": "Veteran", "color": [0.7, 0.7, 0.2], "scale": 1.0, "model": None, "texture": None},
+}
+VANILLA_PLAYER_SKINS = {
+    "default": {"character": "survivor_1", "name": "Default", "color": [0.2, 0.4, 0.8], "model": None, "texture": None},
+}
+VANILLA_ZOMBIE_SKINS = {
+    "common_default": {"zombie": "common", "name": "Default", "color": [0.3, 0.6, 0.3], "model": None, "texture": None},
+}
+VANILLA_WEAPON_SKINS = {
+    "pistol_default": {"weapon": "pistol", "name": "Default", "color": [0.2, 0.2, 0.25], "model": None, "texture": None},
+}
+
+# Which skin is active by default. Mods/players change via --character/--skin args or skins.json "default_for"
+DEFAULT_CHARACTER = "survivor_1"
+DEFAULT_SKIN = "default"

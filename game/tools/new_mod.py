@@ -53,14 +53,29 @@ def main():
     }, indent=2), encoding="utf-8")
     (folder / "zombies.json").write_text(json.dumps({}, indent=2), encoding="utf-8")
     (folder / "maps.json").write_text(json.dumps({}, indent=2), encoding="utf-8")
+    (folder / "characters.json").write_text(json.dumps({
+        "my_hero": {"name": "My Hero", "color": [0.6, 0.4, 0.9],
+                    "scale": 1.0, "model": "assets/my_hero.vrm", "texture": None}
+    }, indent=2), encoding="utf-8")
+    (folder / "player_skins.json").write_text(json.dumps({}, indent=2), encoding="utf-8")
+    (folder / "zombie_skins.json").write_text(json.dumps({}, indent=2), encoding="utf-8")
+    (folder / "weapon_skins.json").write_text(json.dumps({
+        "my_gold": {"weapon": "rifle", "name": "My Gold", "color": [0.95, 0.75, 0.15],
+                    "model": "assets/my_gun.glb", "texture": None}
+    }, indent=2), encoding="utf-8")
     (folder / "hooks.py").write_text(TEMPLATE_HOOKS, encoding="utf-8")
+    adir = folder / "assets"
+    adir.mkdir(exist_ok=True)
+    (adir / "README.md").write_text(
+        "# Put models here: .glb/.gltf/.obj native | .vrm auto | .fbx convert to .glb first\n",
+        encoding="utf-8")
     print(f"Created {folder}")
     if a.pack:
         dzm = MODS / f"{mid}.dzm"
         with zipfile.ZipFile(dzm, "w", zipfile.ZIP_DEFLATED) as z:
-            for f in folder.iterdir():
+            for f in folder.rglob("*"):
                 if f.is_file():
-                    z.write(f, f.name)
+                    z.write(f, str(f.relative_to(folder)))
         print(f"Packed {dzm}")
 
 
