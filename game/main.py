@@ -115,7 +115,14 @@ def main():
     from world.map_loader import build_level
 
     app = Ursina(title="DEADZONE: Survivors (moddable L4D2-like)", fullscreen=False, borderless=False)
-    app.exit_button.visible = False
+    try:
+        app.exit_button.visible = False
+    except AttributeError:
+        pass  # ursina versions differ; exit via Esc
+    try:
+        app.cog_button.visible = False
+    except AttributeError:
+        pass
 
     state = PlayerState(data, loader)
     # --- character + skins selection (all moddable) ---
